@@ -26,8 +26,8 @@ const EventListPage: React.FC = () => {
     }
 
     filtered.sort((a, b) => {
-      const dateTimeA = new Date(`${a.date}T${a.time}`);
-      const dateTimeB = new Date(`${b.date}T${b.time}`);
+      const dateTimeA = new Date(`${a.date}T${a.time ? a.time : "00:00"}`);
+      const dateTimeB = new Date(`${b.date}T${b.time ? b.time : "00:00"}`);
 
       return sortOrder === "asc" ? dateTimeA.getTime() - dateTimeB.getTime() : dateTimeB.getTime() - dateTimeA.getTime();
     });
