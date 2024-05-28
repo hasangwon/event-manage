@@ -9,7 +9,7 @@ interface EventFormProps {
 
 const EventForm: React.FC<EventFormProps> = ({ event, onSave }) => {
   const [formData, setFormData] = useState<Event>({
-    name: "",
+    name: "새 이벤트",
     date: "",
     time: "",
     location: "",
