@@ -1,73 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { deleteEvent } from "../api/events";
-import EventList from "../components/EventList";
-import { Event } from "../types/EventType";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import EventList from "../components/EventList";
 import DeleteModal from "../components/DeleteModal";
-import { useEventContext } from "../context/EventContext";
+import { useEventList } from "../hooks/useEvent";
 
 const EventListPage: React.FC = () => {
   const navigate = useNavigate();
-  const { events, setEvents, searchTerm, setSearchTerm, filterDate, setFilterDate, sortOrder, setSortOrder, currentPage, setCurrentPage } = useEventContext();
-
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [eventToDelete, setEventToDelete] = useState<string | null>(null);
-
-  useEffect(() => {
-    let filtered = [...events];
-
-    if (searchTerm) {
-      filtered = filtered.filter((event) => event.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    }
-
-    if (filterDate) {
-      filtered = filtered.filter((event) => event.date === filterDate);
-    }
-
-    filtered.sort((a, b) => {
-      const dateTimeA = new Date(`${a.date}T${a.time ? a.time : "00:00"}`);
-      const dateTimeB = new Date(`${b.date}T${b.time ? b.time : "00:00"}`);
-
-      return sortOrder === "asc" ? dateTimeA.getTime() - dateTimeB.getTime() : dateTimeB.getTime() - dateTimeA.getTime();
-    });
-
-    setFilteredEvents(filtered);
-
-    if (currentPage !== 1 && events.length <= (currentPage - 1) * 6) {
-      setCurrentPage(1);
-    }
-  }, [events, searchTerm, sortOrder, filterDate, currentPage, setCurrentPage]);
-
-  const handleDelete = async (id: string) => {
-    setShowDeleteModal(true);
-    setEventToDelete(id);
-  };
-
-  const confirmDelete = async () => {
-    if (eventToDelete !== null) {
-      await deleteEvent(eventToDelete);
-      setEvents(events.filter((event) => event.id !== eventToDelete));
-
-      setEventToDelete(null);
-      setShowDeleteModal(false);
-    }
-  };
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentPage(1);
-    setSearchTerm(e.target.value);
-  };
-
-  const handleSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrentPage(1);
-    setSortOrder(e.target.value as "asc" | "desc");
-  };
-
-  const handleFilterDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentPage(1);
-    setFilterDate(e.target.value);
-  };
+  const { filteredEvents, showDeleteModal, handleDelete, confirmDelete, handleSearch, handleSortOrderChange, handleFilterDateChange, paginate, searchTerm, filterDate, sortOrder, currentPage, onClose } = useEventList();
 
   return (
     <div className="container mx-auto p-4 h-full">
@@ -85,8 +24,8 @@ const EventListPage: React.FC = () => {
           <option value="asc">오래된 순</option>
         </select>
       </div>
-      <EventList events={filteredEvents} onDelete={handleDelete} currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      <DeleteModal show={showDeleteModal} onClose={() => setShowDeleteModal(false)} onDelete={confirmDelete} />
+      <EventList events={filteredEvents} onDelete={handleDelete} currentPage={currentPage} paginate={paginate} />
+      <DeleteModal show={showDeleteModal} onClose={onClose} onDelete={confirmDelete} />
     </div>
   );
 };
