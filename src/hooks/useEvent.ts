@@ -3,7 +3,7 @@ import { createEvent, updateEvent, getEventById, deleteEvent } from "../api/even
 import { Event } from "../types/EventType";
 import { useEventContext } from "../context/EventContext";
 import { useNavigate } from "react-router-dom";
-import { formatDateTime } from "../util/dateUtils";
+import { formatDateTime } from "../utils/dateUtils";
 
 export const eventsPerPage = 6;
 
