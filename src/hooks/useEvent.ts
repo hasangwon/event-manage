@@ -7,7 +7,23 @@ import { formatDateTime } from "../util/dateUtils";
 
 export const eventsPerPage = 6;
 
-export const useEventList = () => {
+interface UseEventListReturn {
+  filteredEvents: Event[];
+  showDeleteModal: boolean;
+  handleDelete: (id: string) => void;
+  confirmDelete: () => Promise<void>;
+  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSortOrderChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleFilterDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  paginate: (pageNumber: number) => void;
+  searchTerm: string;
+  filterDate: string;
+  sortOrder: "asc" | "desc";
+  currentPage: number;
+  onClose: () => void;
+}
+
+export const useEventList = (): UseEventListReturn => {
   const { events, setEvents, searchTerm, setSearchTerm, filterDate, setFilterDate, sortOrder, setSortOrder, currentPage, setCurrentPage } = useEventContext();
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -16,7 +32,7 @@ export const useEventList = () => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
   const onClose = () => setShowDeleteModal(false);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     setShowDeleteModal(true);
     setEventToDelete(id);
   };
@@ -88,7 +104,12 @@ export const useEventList = () => {
   };
 };
 
-export const useEventForm = (id?: string) => {
+interface UseEventFormReturn {
+  event: Event | null;
+  handleSave: (event: Event) => Promise<void>;
+}
+
+export const useEventForm = (id?: string): UseEventFormReturn => {
   const navigate = useNavigate();
   const { setEvents } = useEventContext();
   const [event, setEvent] = useState<Event | null>(null);
